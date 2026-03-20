@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebMCP 增强示例（官方规范版）</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        secondary: '#6366f1',
+                        success: '#10b981',
+                        warning: '#f59e0b',
+                        danger: '#ef4444',
+                        dark: '#1e293b'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .glass {
+                background: rgba(255, 255, 255, 0.1);
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+            }
+            .card-hover {
+                transition: all 0.3s ease;
+            }
+            .card-hover:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 min-h-screen text-white">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- 头部 -->
+        <header class="text-center mb-12">
+            <div class="inline-block p-3 bg-primary/20 rounded-full mb-4">
+                <i class="fa fa-microchip text-4xl text-primary"></i>
+            </div>
+            <h1 class="text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">WebMCP 增强示例</h1>
+            <p class="text-xl text-gray-300 max-w-2xl mx-auto">
+                符合官方规范的 WebMCP 工具注册示例（Chrome 146+ Canary/Dev）
+            </p>
+        </header>
+
+        <!-- 状态区域 -->
+        <div id="status" class="mb-8 p-4 rounded-lg bg-gray-800/50 border border-gray-700">
+            <div class="flex items-center justify-center">
+                <div class="animate-spin mr-3">
+                    <i class="fa fa-circle-o-notch text-primary"></i>
+                </div>
+                <span>正在检测 WebMCP 支持情况...</span>
+            </div>
+        </div>
+
+        <!-- 重要提示 -->
+        <div class="mb-8 p-4 rounded-lg bg-yellow-900/30 border border-yellow-700">
+            <div class="flex items-start">
+                <i class="fa fa-exclamation-triangle text-yellow-400 mt-1 mr-3 text-xl"></i>
+                <div>
+                    <h4 class="font-semibold text-yellow-300">重要说明</h4>
+                    <p class="text-sm text-gray-300 mt-1">
+                        1. WebMCP 工具由 AI 模型自动调用，页面仅负责注册工具<br>
+                        2. 需使用 Chrome 146+ Canary/Dev 版本，在 about:flags 中开启 WebMCP<br>
+                        3. 工具调用日志会在下方实时显示（由 AI 触发）
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 工具展示区域 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            <!-- 计算器工具 -->
+            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6 card-hover">
+                <div class="flex items-center mb-4">
+                    <div class="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center mr-3">
+                        <i class="fa fa-calculator text-blue-400"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold">计算器</h3>
+                </div>
+                <p class="text-gray-400 mb-4">AI 可调用此工具执行加减乘除运算</p>
+                <div class="text-sm text-gray-500">
+                    <p>📝 工具名：calculator</p>
+                    <p>🔧 入参：num1(数字), num2(数字), operation(运算类型)</p>
+                </div>
+            </div>
+
+            <!-- 天气查询工具 -->
+            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6 card-hover">
+                <div class="flex items-center mb-4">
+                    <div class="w-10 h-10 rounded-lg bg-yellow-500/20 flex items-center justify-center mr-3">
+                        <i class="fa fa-cloud text-yellow-400"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold">天气查询</h3>
+                </div>
+                <p class="text-gray-400 mb-4">AI 可调用此工具获取城市模拟天气</p>
+                <div class="text-sm text-gray-500">
+                    <p>📝 工具名：getWeather</p>
+                    <p>🔧 入参：city(城市名称)</p>
+                </div>
+            </div>
+
+            <!-- 待办事项工具 -->
+            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6 card-hover">
+                <div class="flex items-center mb-4">
+                    <div class="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center mr-3">
+                        <i class="fa fa-check-square-o text-green-400"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold">待办事项</h3>
+                </div>
+                <p class="text-gray-400 mb-4">AI 可调用此工具管理待办事项列表</p>
+                <div class="text-sm text-gray-500">
+                    <p>📝 工具名：todoManager</p>
+                    <p>🔧 入参：action(操作类型), text/index(内容/索引)</p>
+                </div>
+            </div>
+
+            <!-- 文本处理工具 -->
+            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6 card-hover">
+                <div class="flex items-center mb-4">
+                    <div class="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center mr-3">
+                        <i class="fa fa-text-height text-purple-400"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold">文本处理</h3>
+                </div>
+                <p class="text-gray-400 mb-4">AI 可调用此工具处理文本（大小写/反转/长度）</p>
+                <div class="text-sm text-gray-500">
+                    <p>📝 工具名：textProcessor</p>
+                    <p>🔧 入参：text(文本), operation(处理类型)</p>
+                </div>
+            </div>
+
+            <!-- 随机数生成工具 -->
+            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6 card-hover">
+                <div class="flex items-center mb-4">
+                    <div class="w-10 h-10 rounded-lg bg-red-500/20 flex items-center justify-center mr-3">
+                        <i class="fa fa-random text-red-400"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold">随机数生成</h3>
+                </div>
+                <p class="text-gray-400 mb-4">AI 可调用此工具生成指定范围随机数</p>
+                <div class="text-sm text-gray-500">
+                    <p>📝 工具名：randomGenerator</p>
+                    <p>🔧 入参：min(最小值), max(最大值)</p>
+                </div>
+            </div>
+
+            <!-- 系统信息工具 -->
+            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6 card-hover">
+                <div class="flex items-center mb-4">
+                    <div class="w-10 h-10 rounded-lg bg-indigo-500/20 flex items-center justify-center mr-3">
+                        <i class="fa fa-info-circle text-indigo-400"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold">系统信息</h3>
+                </div>
+                <p class="text-gray-400 mb-4">AI 可调用此工具获取浏览器/设备信息</p>
+                <div class="text-sm text-gray-500">
+                    <p>📝 工具名：systemInfo</p>
+                    <p>🔧 入参：无</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 工具调用日志 -->
+        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+            <h3 class="text-xl font-semibold mb-4 flex items-center">
+                <i class="fa fa-history mr-2 text-gray-400"></i>
+                AI 工具调用日志（由 AI 触发时显示）
+            </h3>
+            <div id="logs" class="space-y-2 max-h-60 overflow-y-auto text-sm">
+                <div class="text-gray-400 italic text-center py-4">
+                    <i class="fa fa-info-circle mr-2"></i>等待 AI 调用工具...
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部信息 -->
+        <footer class="mt-12 text-center text-gray-500 text-sm">
+            <p>WebMCP (Web Model Context Protocol) 实验性 API 示例</p>
+            <p class="mt-2">
+                环境要求：Chrome 146+ Canary/Dev → about:flags → 启用 WebMCP
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // 全局变量
+        let callCount = 0;
+        let todoList = [];
+
+        // 状态提示函数
+        function updateStatus(text, isError = false) {
+            const statusEl = document.getElementById('status');
+            const icon = isError ? '❌' : '✅';
+            const bgClass = isError ? 'bg-red-900/30 border-red-700' : 'bg-green-900/30 border-green-700';
+            
+            statusEl.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <span class="mr-2">${icon}</span>
+                        <span>${text}</span>
+                    </div>
+                    <span class="text-sm text-gray-400">${new Date().toLocaleTimeString()}</span>
+                </div>
+            `;
+            statusEl.className = `mb-8 p-4 rounded-lg ${bgClass} border`;
+        }
+
+        // 添加调用日志
+        function addLog(text, toolName) {
+            const logsEl = document.getElementById('logs');
+            const logEntry = document.createElement('div');
+            logEntry.className = 'bg-gray-900/50 p-3 rounded-lg border border-gray-700';
+            
+            // 生成工具类型对应的颜色标签
+            const toolColors = {
+                'calculator': 'bg-blue-500/20 text-blue-400',
+                'getWeather': 'bg-yellow-500/20 text-yellow-400',
+                'todoManager': 'bg-green-500/20 text-green-400',
+                'textProcessor': 'bg-purple-500/20 text-purple-400',
+                'randomGenerator': 'bg-red-500/20 text-red-400',
+                'systemInfo': 'bg-indigo-500/20 text-indigo-400'
+            };
+            
+            const toolColor = toolColors[toolName] || 'bg-gray-500/20 text-gray-400';
+            
+            logEntry.innerHTML = `
+                <div class="flex items-center justify-between mb-1">
+                    <span class="text-xs px-2 py-1 rounded-full ${toolColor}">${toolName}</span>
+                    <span class="text-xs text-gray-400">#${++callCount} · ${new Date().toLocaleTimeString()}</span>
+                </div>
+                <div class="mt-1 text-gray-300 text-sm">${text}</div>
+            `;
+            
+            // 清除"等待调用"提示
+            if (logsEl.querySelector('.italic')) {
+                logsEl.innerHTML = '';
+            }
+            
+            logsEl.insertBefore(logEntry, logsEl.firstChild);
+            
+            // 限制日志数量
+            if (logsEl.children.length > 15) {
+                logsEl.removeChild(logsEl.lastChild);
+            }
+        }
+
+        // 核心：注册 WebMCP 工具（严格遵循官方规范）
+        async function registerWebMCPTools() {
+            try {
+                // 1. 检查 WebMCP 环境（官方标准检测方式）
+                if (!navigator.modelContext) {
+                    throw new Error(
+                        '当前浏览器不支持 WebMCP！\n' +
+                        '请使用 Chrome 146+ Canary/Dev 版本，并在 about:flags 中启用 WebMCP 实验功能'
+                    );
+                }
+                updateStatus('WebMCP 环境检测通过，开始注册工具...');
+
+                // 2. 获取 modelContext 实例（官方规范）
+                const modelContext = navigator.modelContext;
+                const registeredTools = [];
+
+                // 3. 注册计算器工具（符合官方 API 规范）
+                await modelContext.registerTool({
+                    name: "calculator",
+                    description: "执行数学计算，支持加减乘除四种运算，用于回答数学计算相关问题",
+                    inputSchema: {
+                        type: "object",
+                        properties: {
+                            num1: { type: "number", description: "第一个数字" },
+                            num2: { type: "number", description: "第二个数字" },
+                            operation: { 
+                                type: "string", 
+                                description: "运算类型：add(加), subtract(减), multiply(乘), divide(除)",
+                                enum: ["add", "subtract", "multiply", "divide"]
+                            }
+                        },
+                        required: ["num1", "num2", "operation"],
+                        additionalProperties: false // 官方推荐：禁止额外参数
+                    },
+                    // 执行函数（由 AI 自动触发）
+                    async execute(args) {
+                        const { num1, num2, operation } = args;
+                        let result;
+                        let operator;
+
+                        // 参数校验（官方最佳实践）
+                        if (isNaN(num1) || isNaN(num2)) {
+                            throw new Error('num1 和 num2 必须为有效数字');
+                        }
+
+                        switch (operation) {
+                            case 'add':
+                                result = num1 + num2;
+                                operator = '+';
+                                break;
+                            case 'subtract':
+                                result = num1 - num2;
+                                operator = '-';
+                                break;
+                            case 'multiply':
+                                result = num1 * num2;
+                                operator = '×';
+                                break;
+                            case 'divide':
+                                if (num2 === 0) {
+                                    throw new Error('除数不能为零');
+                                }
+                                result = num1 / num2;
+                                operator = '÷';
+                                break;
+                            default:
+                                throw new Error(`不支持的运算类型：${operation}`);
+                        }
+
+                        const message = `${num1} ${operator} ${num2} = ${result}`;
+                        addLog(message, 'calculator');
+                        
+                        return { 
+                            result: result, 
+                            operation: operation, 
+                            num1: num1, 
+                            num2: num2, 
+                            message: message,
+                            timestamp: new Date().toISOString()
+                        };
+                    }
+                });
+                registeredTools.push('calculator（计算器）');
+
+                // 4. 注册天气查询工具
+                await modelContext.registerTool({
+                    name: "getWeather",
+                    description: "获取指定城市的模拟天气数据，包括温度、天气状况、湿度等信息",
+                    inputSchema: {
+                        type: "object",
+                        properties: {
+                            city: { type: "string", description: "城市名称，如北京、上海、广州" }
+                        },
+                        required: ["city"],
+                        additionalProperties: false
+                    },
+                    async execute(args) {
+                        const { city } = args;
+                        
+                        // 参数校验
+                        if (!city || city.trim() === '') {
+                            throw new Error('城市名称不能为空');
+                        }
+
+                        // 模拟天气数据
+                        const weatherData = {
+                            city: city.trim(),
+                            temperature: Math.floor(Math.random() * 30) + 5, // 5-35℃
+                            condition: ["晴", "多云", "小雨", "阴", "雷阵雨", "小雪"][Math.floor(Math.random() * 6)],
+                            humidity: Math.floor(Math.random() * 60) + 20, // 20-80%
+                            windSpeed: Math.floor(Math.random() * 30) + 1, // 1-30 km/h
+                            updateTime: new Date().toLocaleString()
+                        };
+
+                        const message = `${weatherData.city} 当前天气：${weatherData.condition}，温度 ${weatherData.temperature}℃，湿度 ${weatherData.humidity}%`;
+                        addLog(message, 'getWeather');
+                        
+                        return weatherData;
+                    }
+                });
+                registeredTools.push('getWeather（天气查询）');
+
+                // 5. 注册待办事项工具
+                await modelContext.registerTool({
+                    name: "todoManager",
+                    description: "管理待办事项列表，支持添加、删除、查看待办事项",
+                    inputSchema: {
+                        type: "object",
+                        properties: {
+                            action: { 
+                                type: "string", 
+                                description: "操作类型：add(添加), remove(删除), list(列表)",
+                                enum: ["add", "remove", "list"]
+                            },
+                            text: { type: "string", description: "待办事项文本（仅add操作需要）" },
+                            index: { type: "number", description: "待办事项索引（仅remove操作需要）" }
+                        },
+                        required: ["action"],
+                        additionalProperties: false
+                    },
+                    async execute(args) {
+                        const { action, text, index } = args;
+                        let result = {};
+
+                        switch (action) {
+                            case 'add':
+                                if (!text || text.trim() === '') {
+                                    throw new Error('添加待办事项需要提供文本内容');
+                                }
+                                todoList.push({
+                                    id: Date.now(),
+                                    text: text.trim(),
+                                    completed: false,
+                                    createdAt: new Date().toISOString()
+                                });
+                                result.message = `已添加待办事项: ${text.trim()}`;
+                                result.count = todoList.length;
+                                break;
+                                
+                            case 'remove':
+                                if (index === undefined || index < 0 || index >= todoList.length) {
+                                    throw new Error(`无效的待办事项索引：${index}（当前共 ${todoList.length} 个待办）`);
+                                }
+                                const removed = todoList.splice(index, 1)[0];
+                                result.message = `已删除待办事项: ${removed.text}`;
+                                result.count = todoList.length;
+                                break;
+                                
+                            case 'list':
+                                result.items = todoList.map((item, idx) => ({
+                                    index: idx,
+                                    text: item.text,
+                                    completed: item.completed
+                                }));
+                                result.count = todoList.length;
+                                result.message = `当前共有 ${todoList.length} 个待办事项`;
+                                break;
+                                
+                            default:
+                                throw new Error(`不支持的操作类型：${action}`);
+                        }
+
+                        addLog(result.message, 'todoManager');
+                        return result;
+                    }
+                });
+                registeredTools.push('todoManager（待办事项）');
+
+                // 6. 注册文本处理工具
+                await modelContext.registerTool({
+                    name: "textProcessor",
+                    description: "对文本进行各种处理操作，包括大小写转换、反转、长度计算",
+                    inputSchema: {
+                        type: "object",
+                        properties: {
+                            text: { type: "string", description: "要处理的文本内容" },
+                            operation: { 
+                                type: "string", 
+                                description: "处理类型：uppercase(大写), lowercase(小写), reverse(反转), length(长度)",
+                                enum: ["uppercase", "lowercase", "reverse", "length"]
+                            }
+                        },
+                        required: ["text", "operation"],
+                        additionalProperties: false
+                    },
+                    async execute(args) {
+                        const { text, operation } = args;
+                        let result;
+                        let message;
+
+                        // 参数校验
+                        if (text === undefined) {
+                            throw new Error('必须提供要处理的文本内容');
+                        }
+
+                        switch (operation) {
+                            case 'uppercase':
+                                result = text.toUpperCase();
+                                message = `文本转为大写：${result}`;
+                                break;
+                            case 'lowercase':
+                                result = text.toLowerCase();
+                                message = `文本转为小写：${result}`;
+                                break;
+                            case 'reverse':
+                                result = text.split('').reverse().join('');
+                                message = `文本反转：${result}`;
+                                break;
+                            case 'length':
+                                result = text.length;
+                                message = `文本长度：${result} 个字符`;
+                                break;
+                            default:
+                                throw new Error(`不支持的文本处理类型：${operation}`);
+                        }
+
+                        addLog(message, 'textProcessor');
+                        
+                        return { 
+                            result: result, 
+                            originalText: text, 
+                            operation: operation, 
+                            message: message 
+                        };
+                    }
+                });
+                registeredTools.push('textProcessor（文本处理）');
+
+                // 7. 注册随机数生成工具
+                await modelContext.registerTool({
+                    name: "randomGenerator",
+                    description: "生成指定范围内的随机整数，适用于随机选择、抽奖等场景",
+                    inputSchema: {
+                        type: "object",
+                        properties: {
+                            min: { type: "number", description: "随机数最小值（整数）" },
+                            max: { type: "number", description: "随机数最大值（整数）" }
+                        },
+                        required: ["min", "max"],
+                        additionalProperties: false
+                    },
+                    async execute(args) {
+                        const { min, max } = args;
+                        
+                        // 参数校验
+                        if (isNaN(min) || isNaN(max)) {
+                            throw new Error('min 和 max 必须为有效数字');
+                        }
+                        if (min >= max) {
+                            throw new Error(`最小值 ${min} 必须小于最大值 ${max}`);
+                        }
+
+                        const result = Math.floor(Math.random() * (max - min + 1)) + min;
+                        const message = `在 ${min} 到 ${max} 范围内生成随机数：${result}`;
+                        
+                        addLog(message, 'randomGenerator');
+                        
+                        return { 
+                            result: result, 
+                            min: min, 
+                            max: max, 
+                            message: message 
+                        };
+                    }
+                });
+                registeredTools.push('randomGenerator（随机数生成）');
+
+                // 8. 注册系统信息工具
+                await modelContext.registerTool({
+                    name: "systemInfo",
+                    description: "获取浏览器和设备的系统信息，用于了解运行环境",
+                    inputSchema: {
+                        type: "object",
+                        properties: {}, // 无入参
+                        additionalProperties: false
+                    },
+                    async execute() {
+                        const info = {
+                            browser: {
+                                userAgent: navigator.userAgent,
+                                language: navigator.language,
+                                platform: navigator.platform,
+                                online: navigator.onLine
+                            },
+                            screen: {
+                                width: window.screen.width,
+                                height: window.screen.height,
+                                colorDepth: window.screen.colorDepth
+                            },
+                            deviceMemory: navigator.deviceMemory || '未知',
+                            hardwareConcurrency: navigator.hardwareConcurrency || '未知',
+                            timestamp: new Date().toISOString()
+                        };
+
+                        const message = `获取系统信息：${info.browser.platform} | 分辨率 ${info.screen.width}x${info.screen.height} | 内存 ${info.deviceMemory}GB`;
+                        addLog(message, 'systemInfo');
+                        
+                        return info;
+                    }
+                });
+                registeredTools.push('systemInfo（系统信息）');
+
+                // 9. 最终状态更新
+                updateStatus(`所有 WebMCP 工具注册完成！共 ${registeredTools.length} 个`, false);
+                addLog(`✅ 工具注册完成：${registeredTools.join(', ')}`, 'system');
+
+            } catch (error) {
+                updateStatus(`错误：${error.message}`, true);
+                addLog(`❌ 注册失败：${error.message}`, 'error');
+                console.error('WebMCP 注册异常：', error);
+            }
+        }
+
+        // 页面加载后执行注册
+        document.addEventListener('DOMContentLoaded', () => {
+            // 检测安全上下文（WebMCP 仅在 HTTPS/本地文件中可用）
+            if (!window.isSecureContext) {
+                updateStatus('⚠️ 警告：非安全上下文可能导致 WebMCP 功能受限', false);
+                addLog('⚠️ 非安全上下文：建议使用 HTTPS 或本地文件运行', 'warning');
+            }
+            
+            // 执行工具注册
+            registerWebMCPTools();
+        });
+    </script>
+</body>
+</html>
